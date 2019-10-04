@@ -1,0 +1,33 @@
+{
+  "name": "fluids",
+  "version": "0.1.0",
+  "description": "Glue layer for reactivity",
+  "main": "src/index.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "prepare": "yarn build"
+  },
+  "files": [
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alloc/fluids.git"
+  },
+  "keywords": [
+    "reactive",
+    "reactivity",
+    "glue",
+    "observable",
+    "watch"
+  ],
+  "author": "Alec Larson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alloc/fluids/issues"
+  },
+  "homepage": "https://github.com/alloc/fluids#readme",
+  "devDependencies": {
+    "typescript": "^3.6.3"
+  }
+}
