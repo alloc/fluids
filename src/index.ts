@@ -1,16 +1,31 @@
 const $config = Symbol.for('FluidValue:config')
 
-/** Access the internal config for observing a `FluidValue` object. */
-export function getFluidConfig<T, Event extends FluidEvent<T>>(
-  arg: FluidValue<T, Event>
-): FluidConfig<T, Event>
-export function getFluidConfig(arg: any): FluidConfig | undefined
-export function getFluidConfig(arg: any): FluidConfig | undefined {
+export { hasFluidValue, getFluidValue, getFluidConfig, setFluidConfig }
+
+/** Does the given value have a `FluidConfig` object? */
+const hasFluidValue = (arg: any): arg is FluidValue => !!getFluidConfig(arg)
+
+type GetFluidValue<T> = T extends FluidValue<infer U> ? U : T
+
+/** Get the current value of a fluid object. Returns the first argument when it's not a fluid object. */
+function getFluidValue<T>(target: T): GetFluidValue<T>
+function getFluidValue(arg: any) {
+  const config = getFluidConfig(arg)
+  return config ? config.get() : arg
+}
+
+type GetFluidConfig<T> = T extends FluidValue<infer U, infer E>
+  ? FluidConfig<U, E>
+  : undefined
+
+/** Get the methods for observing the given object. Returns undefined if not a fluid object. */
+function getFluidConfig<T>(arg: T): GetFluidConfig<T>
+function getFluidConfig(arg: any) {
   if (arg) return arg[$config]
 }
 
-/** Set the internal config for observing a `FluidValue` object. */
-export function setFluidConfig(target: object, config: FluidConfig) {
+/** Set the methods for observing the given object. */
+function setFluidConfig(target: object, config: FluidConfig) {
   Object.defineProperty(target, $config, { value: config })
 }
 
