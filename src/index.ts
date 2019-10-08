@@ -22,7 +22,7 @@ function getFluidValue(arg: any) {
 
 type GetFluidConfig<T> = T extends FluidValue<infer U, infer E>
   ? FluidConfig<U, E>
-  : undefined
+  : FluidConfig | undefined
 
 /** Get the methods for observing the given object. Returns undefined if not a fluid object. */
 function getFluidConfig<T>(arg: T): GetFluidConfig<T>
