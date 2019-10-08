@@ -1,6 +1,12 @@
 const $config = Symbol.for('FluidValue:config')
 
-export { hasFluidValue, getFluidValue, getFluidConfig, setFluidConfig }
+export {
+  hasFluidValue,
+  getFluidValue,
+  getFluidConfig,
+  setFluidConfig,
+  addFluidObserver,
+}
 
 /** Does the given value have a `FluidConfig` object? */
 const hasFluidValue = (arg: any): arg is FluidValue => !!getFluidConfig(arg)
@@ -27,6 +33,15 @@ function getFluidConfig(arg: any) {
 /** Set the methods for observing the given object. */
 function setFluidConfig(target: object, config: FluidConfig) {
   Object.defineProperty(target, $config, { value: config })
+}
+
+/** Add an observer to a fluid object. Returns an unsubscribe function if the target is a fluid object, otherwise undefined. */
+function addFluidObserver(target: object, observer: FluidObserver) {
+  const config = getFluidConfig(target)
+  if (config) {
+    config.addChild(observer)
+    return () => config!.removeChild(observer)
+  }
 }
 
 export interface ChangeEvent<T = any> {
