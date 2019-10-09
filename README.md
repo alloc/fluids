@@ -4,7 +4,7 @@ This library is a tiny glue layer for observable events.
 
 - Create a tree of observable values
 - Let parent nodes send arbitrary events to children (for maximum flexibility)
-- Be as tiny as possible
+- Stay small yet provide helpers for easier integration
 
 ## API
 
