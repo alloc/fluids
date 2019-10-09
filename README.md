@@ -8,11 +8,28 @@ This library is a tiny glue layer for observable events.
 
 ## API
 
-- `hasFluidValue(any)`: Returns true if the given value is a fluid object
-- `getFluidValue(any)`: Returns the current value of the fluid object (if possible), otherwise the argument is passed thru
-- `getFluidConfig(any)`: Returns the `FluidConfig` object that allows for observing the argument
-- `setFluidConfig(object, FluidConfig)`: Defines the hidden property that holds the `FluidConfig` object. This can only be called once per fluid object.
-- `addFluidObserver(object, FluidObserver)`: Attach an observer to a fluid object, and get an unsubscribe function back. Returns undefined if the first argument is not a fluid object.
+- `hasFluidValue(any)`
+
+  Returns `true` if the given value is a fluid object.
+
+- `getFluidValue(any)`
+
+  Returns the current value of the fluid object (if possible),
+  otherwise the argument is passed through as-is.
+
+- `getFluidConfig(any)`
+
+  Returns the `FluidConfig` object that allows for observing the argument
+
+- `setFluidConfig(object, FluidConfig)`
+
+  Defines the hidden property that holds the `FluidConfig` object.
+  This can only be called once per fluid object.
+
+- `addFluidObserver(object, FluidObserver)`
+
+  Attach an observer to a fluid object, and get an unsubscribe function back.
+  Returns `undefined` if the first argument is not a fluid object.
 
 ## Types
 
