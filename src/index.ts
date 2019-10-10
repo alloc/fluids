@@ -32,7 +32,10 @@ function getFluidConfig(arg: any) {
 
 /** Set the methods for observing the given object. */
 function setFluidConfig(target: object, config: FluidConfig) {
-  Object.defineProperty(target, $config, { value: config })
+  Object.defineProperty(target, $config, {
+    value: config,
+    configurable: true,
+  })
 }
 
 /** Add an observer to a fluid object. Returns an unsubscribe function if the target is a fluid object, otherwise undefined. */

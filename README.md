@@ -24,7 +24,7 @@ This library is a tiny glue layer for observable events.
 - `setFluidConfig(target: object, config: FluidConfig): void`
 
   Defines the hidden property that holds the `FluidConfig` object.
-  This can only be called once per fluid object.
+  Newer calls override older calls.
 
 - `addFluidObserver(target: object, observer: FluidObserver): () => void`
 
