@@ -70,15 +70,15 @@ This library is a tiny glue layer for observable events.
 
 ## `FluidConfig` example
 
-This example adds observability to a ref object (like in React: `{ value }`).
+This example adds observability to a ref object, like what `React.useRef` returns.
 
 Any object can conform to the `FluidConfig` interface **without needing to change its public API.**
 
 ```ts
 import { setFluidConfig, FluidObserver, FluidEvent } from 'fluids'
 
-/** Create a `{ value }` object that can be observed */
-function createRef(value) {
+/** Create a ref object that can be observed */
+function createRef(current) {
   const ref = {}
 
   // Observer tracking
@@ -87,17 +87,17 @@ function createRef(value) {
     children.forEach(child => child.onParentChange(event))
 
   // Change tracking
-  const get = () => value
-  Object.defineProperty(ref, 'value', {
+  const get = () => current
+  Object.defineProperty(ref, 'current', {
     enumerable: true,
     get,
     set: newValue => {
-      if (value !== newValue) {
-        value = newValue
+      if (current !== newValue) {
+        current = newValue
         emit({
           type: 'change',
           parent: ref,
-          value,
+          value: newValue,
         })
       }
     }
@@ -132,7 +132,7 @@ const stop = addFluidObserver(ref, {
   }
 })
 
-ref.value++
+ref.current++
 stop()
-ref.value++
+ref.current++
 ```
