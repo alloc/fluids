@@ -6,6 +6,8 @@ This library is a tiny glue layer for observable events.
 - Let parent nodes send arbitrary events to children (for maximum flexibility)
 - Stay small yet provide helpers for easier integration
 
+&nbsp;
+
 ## API
 
 - `hasFluidValue(target: any): boolean`
@@ -30,6 +32,8 @@ This library is a tiny glue layer for observable events.
 
   Attach an observer to a fluid object, and get an unsubscribe function back.
   Returns `undefined` if the first argument is not a fluid object.
+
+&nbsp;
 
 ## Types
 
@@ -61,6 +65,8 @@ This library is a tiny glue layer for observable events.
 - `interface ChangeEvent<T>`
 
   The basic shape that every "change" event must adhere to.
+
+&nbsp;
 
 ## `FluidConfig` example
 
@@ -107,6 +113,8 @@ function createRef(value) {
   return ref
 }
 ```
+
+&nbsp;
 
 ## `FluidObserver` example
 
