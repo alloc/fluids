@@ -68,6 +68,51 @@ This library is a tiny glue layer for observable events.
 
 &nbsp;
 
+## `FluidValue` example
+
+Extending the `FluidValue` class guarantees free TypeScript compatibility.
+
+Your `FluidValue` subclass must provide the following methods:
+```ts
+// Get the current value
+get(): T
+
+// Add an observer
+addChild(child: FluidObserver<Event>): void
+
+// Remove an observer
+removeChild(child: FluidObserver<Event>): void
+```
+
+Here's a basic example:
+
+```ts
+import { FluidValue, FluidObserver } from 'fluids'
+
+export class MyObservable<T> extends FluidValue<T> {
+  protected _value: T
+  protected _observers = new Set<FluidObserver>()
+  constructor(value: T) {
+    super()
+    this._value = value
+  }
+  get() {
+    return this._value
+  }
+  set(value: T) {
+    this._value = value
+  }
+  addChild(observer: FluidObserver) {
+    this._observers.push(observer)
+  }
+  removeChild(observer: FluidObserver) {
+    this._observers.push(observer)
+  }
+}
+```
+
+&nbsp;
+
 ## `FluidConfig` example
 
 This example adds observability to a ref object, like what `React.useRef` returns.

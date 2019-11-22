@@ -71,8 +71,11 @@ export interface FluidConfig<T = any, Event extends FluidEvent<T> = any> {
 }
 
 /**
- * This class stores a single mutable value, which can be observed by a `FluidObserver` object.
- * The best part is that it can send *any* event to observers, not only change events.
+ * This class stores a single dynamic value, which can be observed by multiple `FluidObserver` objects.
+ *
+ * In order to support non-writable streams, this class doesn't expect a `set` method to exist.
+ *
+ * It can send *any* event to observers, not only change events.
  */
 export abstract class FluidValue<T = any, Event extends FluidEvent<T> = any>
   implements FluidConfig<T, Event> {
