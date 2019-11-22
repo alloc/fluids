@@ -1,6 +1,6 @@
 {
   "name": "fluids",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Glue layer for reactivity",
   "main": "src/index.js",
   "scripts": {
