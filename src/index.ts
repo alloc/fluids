@@ -93,3 +93,10 @@ export abstract class FluidValue<T = any, Event extends FluidEvent<T> = any>
 export interface FluidObserver<Event extends FluidEvent = any> {
   onParentChange(event: ChangeEvent | Event): void
 }
+
+/**
+ * Add the `FluidValue` type to every property.
+ */
+export type FluidProps<T> = T extends object
+  ? { [P in keyof T]: T[P] | FluidValue<Exclude<T[P], void>> }
+  : unknown
