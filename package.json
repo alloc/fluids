@@ -9,7 +9,8 @@
     "prepare": "yarn build"
   },
   "files": [
-    "src"
+    "src",
+    "dist"
   ],
   "repository": {
     "type": "git",
