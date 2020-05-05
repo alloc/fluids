@@ -2,9 +2,10 @@
   "name": "fluids",
   "version": "0.1.6",
   "description": "Glue layer for reactivity",
-  "main": "src/index.js",
+  "main": "dist/cjs/index",
+  "module": "dist/esm/index",
   "scripts": {
-    "build": "tsc -p .",
+    "build": "tsc -p . --outDir dist/cjs && tsc -p . --module es6 --outDir dist/esm",
     "prepare": "yarn build"
   },
   "files": [
