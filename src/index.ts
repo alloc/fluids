@@ -39,6 +39,16 @@ function setFluidConfig(target: object, config: FluidConfig) {
 }
 
 /** Add an observer to a fluid object. Returns an unsubscribe function if the target is a fluid object, otherwise undefined. */
+function addFluidObserver<E extends FluidEvent>(
+  target: FluidValue<any, E>,
+  observer: FluidObserver<E>
+): () => void
+
+function addFluidObserver(
+  target: object,
+  observer: FluidObserver
+): (() => void) | undefined
+
 function addFluidObserver(target: object, observer: FluidObserver) {
   const config = getFluidConfig(target)
   if (config) {
