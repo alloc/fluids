@@ -11,10 +11,10 @@ export {
 /** Does the given value have a `FluidConfig` object? */
 const hasFluidValue = (arg: any): arg is FluidValue => !!getFluidConfig(arg)
 
-type GetFluidValue<T> = T extends FluidValue<infer U> ? U : T
-
 /** Get the current value of a fluid object. Returns the first argument when it's not a fluid object. */
-function getFluidValue<T>(target: T): GetFluidValue<T>
+function getFluidValue<T, U = never>(
+  target: T | FluidValue<U>
+): Exclude<T, FluidValue> | U
 function getFluidValue(arg: any) {
   const config = getFluidConfig(arg)
   return config ? config.get() : arg
