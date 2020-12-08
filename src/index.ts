@@ -67,7 +67,6 @@ interface GetFluidObservers {
 export interface FluidEvent<T = any> {
   type: string
   parent: FluidValue<T>
-  [key: string]: unknown
 }
 
 /**
