@@ -111,6 +111,11 @@ export type FluidProps<T> = T extends object
   ? { [P in keyof T]: T[P] | FluidValue<Exclude<T[P], void>> }
   : unknown
 
+/** Remove the `FluidValue` type from every property. */
+export type StaticProps<T extends object> = {
+  [P in keyof T]: T[P] extends FluidValue<infer U> ? U : T[P]
+}
+
 /** Define the getter called by `getFluidValue`. */
 const setFluidGetter = (target: object, get: () => any) =>
   setHidden(target, $get, get)
