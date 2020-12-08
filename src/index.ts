@@ -173,4 +173,8 @@ function removeFluidObserver(target: any, observer: FluidObserver) {
 }
 
 const setHidden = (target: any, key: any, value: any) =>
-  Object.defineProperty(target, key, { value, configurable: true })
+  Object.defineProperty(target, key, {
+    value,
+    writable: true,
+    configurable: true,
+  })
