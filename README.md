@@ -8,176 +8,129 @@ This library is a tiny glue layer for observable events.
 
 &nbsp;
 
-## API
+### Observe a value
 
-- `hasFluidValue(target: any): boolean`
+Any object can be observed, but `FluidValue` objects have strongly typed 
+events. Observed objects are basically event emitters whose listeners
+receive every event, and they typically represent a single value.
 
-  Returns `true` if the given value is a fluid object.
-
-- `getFluidValue(target: any): any`
-
-  Returns the current value of the fluid object (if possible),
-  otherwise the argument is passed through as-is.
-
-- `getFluidConfig(target: any): FluidConfig`
-
-  Returns the `FluidConfig` object that allows for observing the argument
-
-- `setFluidConfig(target: object, config: FluidConfig): void`
-
-  Defines the hidden property that holds the `FluidConfig` object.
-  Newer calls override older calls.
-
-- `addFluidObserver(target: object, observer: FluidObserver): () => void`
-
-  Attach an observer to a fluid object, and get an unsubscribe function back.
-  Returns `undefined` if the first argument is not a fluid object.
-
-&nbsp;
-
-## Types
-
-- `class FluidValue<T, EventType> implements FluidConfig<T, EventType>`
-
-  The `FluidValue` class is convenient for automatic TypeScript compatibility
-  with other libraries using `fluids`. The constructor sets each instance as
-  its own `FluidConfig` (eg: `setFluidConfig(this, this)`), so you need to
-  implement the `onParentChange(event)` method in your subclass. Remember,
-  you're not required to use `FluidValue` at all. The `setFluidConfig`
-  function is enough if you don't want TypeScript interop OOTB.
-
-- `interface FluidConfig<T, EventType>`
-
-  The `FluidConfig` interface has three methods: `get`, `addChild`, and
-  `removeChild`. These methods act as a compatibility layer between
-  libraries and their custom event-based solutions.
-
-- `interface FluidObserver<EventType>`
-
-  The `FluidObserver` interface has one method, `onParentChange(event)`,
-  which is called by observed `FluidConfig` objects whenever a new event
-  occurs (like a "change" event).
-
-- `interface FluidEvent<T>`
-
-  The basic shape that every `FluidConfig` event must adhere to.
-
-- `interface ChangeEvent<T>`
-
-  The basic shape that every "change" event must adhere to.
-
-&nbsp;
-
-## `FluidValue` example
-
-Extending the `FluidValue` class guarantees free TypeScript compatibility.
-
-Your `FluidValue` subclass must provide the following methods:
-```ts
-// Get the current value
-get(): T
-
-// Add an observer
-addChild(child: FluidObserver<Event>): void
-
-// Remove an observer
-removeChild(child: FluidObserver<Event>): void
-```
-
-Here's a basic example:
-
-```ts
-import { FluidValue, FluidObserver } from 'fluids'
-
-export class MyObservable<T> extends FluidValue<T> {
-  protected _value: T
-  protected _observers = new Set<FluidObserver>()
-  constructor(value: T) {
-    super()
-    this._value = value
-  }
-  get() {
-    return this._value
-  }
-  set(value: T) {
-    this._value = value
-  }
-  addChild(observer: FluidObserver) {
-    this._observers.push(observer)
-  }
-  removeChild(observer: FluidObserver) {
-    this._observers.push(observer)
-  }
-}
-```
-
-&nbsp;
-
-## `FluidConfig` example
-
-This example adds observability to a ref object, like what `React.useRef` returns.
-
-Any object can conform to the `FluidConfig` interface **without needing to change its public API.**
-
-```ts
-import { setFluidConfig, FluidObserver, FluidEvent } from 'fluids'
-
-/** Create a ref object that can be observed */
-function createRef(current) {
-  const ref = {}
-
-  // Observer tracking
-  const children = new Set<FluidObserver>()
-  const emit = (event: FluidEvent) =>
-    children.forEach(child => child.onParentChange(event))
-
-  // Change tracking
-  const get = () => current
-  Object.defineProperty(ref, 'current', {
-    enumerable: true,
-    get,
-    set: newValue => {
-      if (current !== newValue) {
-        current = newValue
-        emit({
-          type: 'change',
-          parent: ref,
-          value: newValue,
-        })
-      }
-    }
-  })
-
-  // Observer API
-  setFluidConfig(ref, {
-    get,
-    addChild: child => children.add(child),
-    removeChild: child => children.delete(child),
-  })
-
-  return ref
-}
-```
-
-&nbsp;
-
-## `FluidObserver` example
-
-This example shows how to observe a fluid object.
+To start observing:
 
 ```ts
 import { addFluidObserver } from 'fluids'
 
-const ref = createRef(0)
-const stop = addFluidObserver(ref, {
-  onParentChange(event) {
-    if (event.type === 'change') {
-      console.log(event.value, event.parent)
-    }
-  }
+// You can pass a function:
+let observer = addFluidObserver(target, event => {
+  console.log(event)
 })
 
-ref.current++
-stop()
-ref.current++
+// or pass an object:
+observer = addFluidObserver(target, {
+  eventObserved(event) {
+    console.log(event)
+  }
+})
+```
+
+To stop observing:
+
+```ts
+import { removeFluidObserver } from 'fluids'
+
+removeFluidObserver(target, observer)
+```
+
+### Create an observed object
+
+You can extend the `FluidValue` class for automatic TypeScript support with
+`fluids`-compatible libraries.
+
+```ts
+import { FluidValue, callFluidObservers } from 'fluids'
+
+// Your class can have multiple event types.
+type RefEvent<T> = { type: 'change', value: T, parent: Ref<T> }
+
+// This example is an observable React ref.
+class Ref<T> extends FluidValue<T, RefEvent<T>> {
+  private _current: T
+  constructor(initialValue: T) {
+    // Passing a getter to super is only required
+    // if your class has no "get" method.
+    super(() => this._current)
+
+    this._current = initialValue
+  }
+  get current() {
+    return this._current
+  }
+  set current(value: T) {
+    this._current = value
+
+    // Send the change to all observers.
+    callFluidObservers(this, {
+      type: 'change',
+      value,
+      parent: this,
+    })
+  }
+  //
+  // These methods are completely optional.
+  //
+  protected observerAdded(count: number) {
+    if (count == 1) {
+      // Do something when the first observer is added.
+    }
+  }
+  protected observerRemoved(count: number) {
+    if (count == 0) {
+      // Do something when the last observer is removed.
+    }
+  }
+}
+```
+
+If extending `FluidValue` isn't an option, you can outfit an object or
+prototype with the `setFluidGetter` function:
+
+```ts
+import { setFluidGetter, callFluidObservers } from 'fluids'
+
+// This example augments an existing React ref.
+let { current } = ref
+let get = () => current
+setFluidGetter(ref, get)
+Object.defineProperty(ref, 'current', {
+  get,
+  set(value) {
+    current = value
+
+    // Remember to notify any observers.
+    callFluidObservers(ref, {
+      type: 'change',
+      value,
+      parent: ref,
+    })
+  }
+})
+```
+
+### For libraries
+
+The remaining functions are useful when making a `fluids`-compatible library.
+
+```ts
+import { hasFluidValue, getFluidValue, getFluidObservers, callFluidObserver } from 'fluids'
+
+// Check if a value is observable.
+hasFluidValue(target)
+
+// Get the current value. Returns `target` if not observable.
+getFluidValue(target)
+
+// Get the current observers (or null if none exist).
+getFluidObservers(target)
+
+// Call a single observer. Useful for special observation, like waterfalls.
+callFluidObserver(observer, event)
 ```
