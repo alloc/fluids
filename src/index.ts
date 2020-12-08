@@ -43,6 +43,13 @@ function callFluidObserver(observer: any, event: FluidEvent) {
 }
 
 /** Send an event to all observers. */
+function callFluidObservers<E extends FluidEvent>(
+  target: FluidValue<any, E>,
+  event: E
+): void
+
+function callFluidObservers(target: object, event: FluidEvent): void
+
 function callFluidObservers(target: any, event: FluidEvent) {
   let observers: Set<FluidObserver> = target[$observers]
   if (observers) {
