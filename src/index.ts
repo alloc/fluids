@@ -2,6 +2,7 @@ const $get = Symbol.for('FluidValue.get')
 const $observers = Symbol.for('FluidValue.observers')
 
 export {
+  FluidValue,
   hasFluidValue,
   getFluidValue,
   getFluidObservers,
@@ -73,7 +74,7 @@ export interface FluidEvent<T = any> {
  * Extend this class for automatic TypeScript support when passing this
  * value to `fluids`-compatible libraries.
  */
-export abstract class FluidValue<T = any, E extends FluidEvent<T> = any> {
+abstract class FluidValue<T = any, E extends FluidEvent<T> = any> {
   // @ts-ignore
   private [$get]: () => T
   // @ts-ignore
