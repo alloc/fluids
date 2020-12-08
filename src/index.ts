@@ -59,11 +59,11 @@ function callFluidObservers(target: any, event: FluidEvent) {
   }
 }
 
-interface GetFluidValue {
+type GetFluidValue = {
   <T, U = never>(target: T | FluidValue<U>): Exclude<T, FluidValue> | U
 }
 
-interface GetFluidObservers {
+type GetFluidObservers = {
   <E extends FluidEvent>(target: FluidValue<any, E>): ReadonlySet<
     FluidObserver<E>
   > | null
