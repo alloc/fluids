@@ -161,13 +161,14 @@ function removeFluidObserver<E extends FluidEvent>(
 function removeFluidObserver(target: any, observer: FluidObserver) {
   let observers: Set<FluidObserver> = target[$observers]
   if (observers && observers.has(observer)) {
-    if (observers.size > 1) {
+    const count = observers.size - 1
+    if (count) {
       observers.delete(observer)
     } else {
       target[$observers] = null
     }
     if (target.observerRemoved) {
-      target.observerRemoved(observers.size, observer)
+      target.observerRemoved(count, observer)
     }
   }
 }
