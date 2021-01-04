@@ -165,7 +165,7 @@ function removeFluidObserver(target: any, observer: FluidObserver) {
     if (count) {
       observers.delete(observer)
     } else {
-      target[$observers] = null
+      setHidden(target, $observers, null)
     }
     if (target.observerRemoved) {
       target.observerRemoved(count, observer)
