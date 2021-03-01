@@ -76,11 +76,15 @@ export interface FluidEvent<T = any> {
   parent: FluidValue<T>
 }
 
+interface AnyEvent extends FluidEvent {
+  [key: string]: any
+}
+
 /**
  * Extend this class for automatic TypeScript support when passing this
  * value to `fluids`-compatible libraries.
  */
-abstract class FluidValue<T = any, E extends FluidEvent<T> = any> {
+abstract class FluidValue<T = any, E extends FluidEvent<T> = AnyEvent> {
   // @ts-ignore
   private [$get]: () => T
   // @ts-ignore
@@ -102,7 +106,7 @@ abstract class FluidValue<T = any, E extends FluidEvent<T> = any> {
 }
 
 /** An observer of `FluidValue` objects. */
-export type FluidObserver<E extends FluidEvent = any> =
+export type FluidObserver<E extends FluidEvent = AnyEvent> =
   | { eventObserved(event: E): void }
   | { (event: E): void }
 
