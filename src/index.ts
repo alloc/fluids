@@ -76,7 +76,8 @@ export interface FluidEvent<T = any> {
   parent: FluidValue<T>
 }
 
-interface AnyEvent extends FluidEvent {
+/** @internal */
+export interface AnyEvent extends FluidEvent {
   [key: string]: any
 }
 
