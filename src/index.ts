@@ -34,7 +34,15 @@ function callFluidObserver<E extends FluidEvent>(
   event: E
 ): void
 
-function callFluidObserver(observer: any, event: FluidEvent) {
+function callFluidObserver(
+  observer: FluidObserver,
+  event: UnsafeFluidEvent
+): void
+
+function callFluidObserver(
+  observer: any,
+  event: FluidEvent | UnsafeFluidEvent
+) {
   if (observer.eventObserved) {
     observer.eventObserved(event)
   } else {
@@ -48,9 +56,9 @@ function callFluidObservers<E extends FluidEvent>(
   event: E
 ): void
 
-function callFluidObservers(target: object, event: FluidEvent): void
+function callFluidObservers(target: object, event: UnsafeFluidEvent): void
 
-function callFluidObservers(target: any, event: FluidEvent) {
+function callFluidObservers(target: any, event: FluidEvent | UnsafeFluidEvent) {
   let observers: Set<FluidObserver> = target[$observers]
   if (observers) {
     observers.forEach((observer) => {
@@ -78,6 +86,13 @@ export interface FluidEvent<T = any> {
 
 /** @internal */
 export interface AnyEvent extends FluidEvent {
+  [key: string]: any
+}
+
+/** @internal */
+export interface UnsafeFluidEvent {
+  type: string
+  parent: object
   [key: string]: any
 }
 
