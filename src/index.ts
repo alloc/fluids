@@ -93,6 +93,15 @@ export interface UnsafeFluidEvent<T extends object = any>
 /**
  * A source of `FluidEvent` objects that can be observed with
  * the `addFluidObserver` function.
+ *
+ * Use "interface merging" to mark your class as observable:
+ *
+ *     class Foo {}
+ *     interface Foo extends FluidObservable<FooEvent> {}
+ *
+ * Once that's done, you get the following benefits:
+ * - observers added with `addFluidObserver` are type-checked
+ * - events passed to `callFluidObservers` are type-checked
  */
 export interface FluidObservable<E extends FluidEvent = any> {
   [$observers]: Set<FluidObserver<E>>
