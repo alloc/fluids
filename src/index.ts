@@ -164,16 +164,14 @@ function addFluidObserver<E extends UnsafeFluidEvent>(
 ): typeof observer
 
 function addFluidObserver(target: any, observer: FluidObserver) {
-  if (target[$get]) {
-    let observers: Set<FluidObserver> = target[$observers]
-    if (!observers) {
-      setHidden(target, $observers, (observers = new Set()))
-    }
-    if (!observers.has(observer)) {
-      observers.add(observer)
-      if (target.observerAdded) {
-        target.observerAdded(observers.size, observer)
-      }
+  let observers: Set<FluidObserver> = target[$observers]
+  if (!observers) {
+    setHidden(target, $observers, (observers = new Set()))
+  }
+  if (!observers.has(observer)) {
+    observers.add(observer)
+    if (target.observerAdded) {
+      target.observerAdded(observers.size, observer)
     }
   }
   return observer
