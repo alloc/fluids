@@ -109,10 +109,10 @@ abstract class FluidValue<T = any, E extends FluidEvent = UnsafeFluidEvent> {
   protected get?(): T
 
   /** Called after an observer is added. */
-  protected observerAdded?(count: number, observer: FluidObserver): void
+  protected observerAdded?(count: number, observer: FluidObserver<any>): void
 
   /** Called after an observer is removed. */
-  protected observerRemoved?(count: number, observer: FluidObserver): void
+  protected observerRemoved?(count: number, observer: FluidObserver<any>): void
 }
 
 /** An observer of `FluidValue` objects. */
