@@ -78,18 +78,18 @@ type GetFluidObservers = {
   (target: object): ReadonlySet<FluidObserver> | null
 }
 
-/** An event sent to `FluidObserver` objects. */
+/** An event from a `FluidValue` instance */
 export interface FluidEvent<T = any> {
   type: string
   parent: FluidValue<T>
 }
 
-/** @internal */
-export interface AnyEvent extends FluidEvent {
+/** An event from any `FluidValue` instance */
+export interface UnknownFluidEvent<T = any> extends FluidEvent<T> {
   [key: string]: any
 }
 
-/** @internal */
+/** An untyped event from a `fluids` compatible object */
 export interface UnsafeFluidEvent {
   type: string
   parent: object
@@ -97,14 +97,15 @@ export interface UnsafeFluidEvent {
 }
 
 /**
- * Extend this class for automatic TypeScript support when passing this
- * value to `fluids`-compatible libraries.
+ * Extend this class for automatic TypeScript support when passing
+ * an object to a `fluids` compatible function.
  */
-abstract class FluidValue<T = any, E extends FluidEvent<T> = AnyEvent> {
-  // @ts-ignore
-  private [$get]: () => T
-  // @ts-ignore
-  private [$observers]?: Set<FluidObserver<E>>
+abstract class FluidValue<
+  T = any,
+  E extends FluidEvent<T> = UnknownFluidEvent<T>
+> {
+  protected [$get]: () => T
+  protected [$observers]?: Set<FluidObserver<E>>
 
   constructor(get?: () => T) {
     if (!get && !(get = this.get)) {
@@ -115,14 +116,16 @@ abstract class FluidValue<T = any, E extends FluidEvent<T> = AnyEvent> {
 
   /** Get the current value. */
   protected get?(): T
+
   /** Called after an observer is added. */
-  protected observerAdded?(count: number, observer: FluidObserver<E>): void
+  protected observerAdded?(count: number, observer: FluidObserver): void
+
   /** Called after an observer is removed. */
-  protected observerRemoved?(count: number, observer: FluidObserver<E>): void
+  protected observerRemoved?(count: number, observer: FluidObserver): void
 }
 
 /** An observer of `FluidValue` objects. */
-export type FluidObserver<E extends FluidEvent = AnyEvent> =
+export type FluidObserver<E extends UnsafeFluidEvent = UnsafeFluidEvent> =
   | { eventObserved(event: E): void }
   | { (event: E): void }
 
@@ -146,7 +149,7 @@ function addFluidObserver<T, E extends FluidEvent>(
   observer: FluidObserver<E>
 ): typeof observer
 
-function addFluidObserver<E extends FluidEvent>(
+function addFluidObserver<E extends UnsafeFluidEvent>(
   target: object,
   observer: FluidObserver<E>
 ): typeof observer
@@ -173,7 +176,7 @@ function removeFluidObserver<E extends FluidEvent>(
   observer: FluidObserver<E>
 ): void
 
-function removeFluidObserver<E extends FluidEvent>(
+function removeFluidObserver<E extends UnsafeFluidEvent>(
   target: object,
   observer: FluidObserver<E>
 ): void
