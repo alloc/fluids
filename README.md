@@ -10,7 +10,7 @@ This library is a tiny glue layer for observable events.
 
 ### Observe a value
 
-Any object can be observed, but `FluidValue` objects have strongly typed 
+Any object can be observed, but `FluidValue` objects have strongly typed
 events. Observed objects are basically event emitters whose listeners
 receive every event, and they typically represent a single value.
 
@@ -20,7 +20,7 @@ To start observing:
 import { addFluidObserver } from 'fluids'
 
 // You can pass a function:
-let observer = addFluidObserver(target, event => {
+let observer = addFluidObserver(target, (event) => {
   console.log(event)
 })
 
@@ -28,7 +28,7 @@ let observer = addFluidObserver(target, event => {
 observer = addFluidObserver(target, {
   eventObserved(event) {
     console.log(event)
-  }
+  },
 })
 ```
 
@@ -46,13 +46,17 @@ You can extend the `FluidValue` class for automatic TypeScript support with
 `fluids`-compatible libraries.
 
 ```ts
-import { FluidValue, callFluidObservers } from 'fluids'
+import { FluidValue, FluidObservable, callFluidObservers } from 'fluids'
 
 // Your class can have multiple event types.
-type RefEvent<T> = { type: 'change', value: T, parent: Ref<T> }
+// The `type` and `parent` properties are required.
+type RefEvent<T> = { type: 'change'; value: T; parent: Ref<T> }
+
+// Use "interface merging" to attach the event types.
+interface Ref<T> extends FluidObservable<RefEvent<T>> {}
 
 // This example is an observable React ref.
-class Ref<T> extends FluidValue<T, RefEvent<T>> {
+class Ref<T> extends FluidValue<T> {
   private _current: T
   constructor(initialValue: T) {
     // Passing a getter to super is only required
@@ -111,7 +115,7 @@ Object.defineProperty(ref, 'current', {
       value,
       parent: ref,
     })
-  }
+  },
 })
 ```
 
@@ -120,7 +124,12 @@ Object.defineProperty(ref, 'current', {
 The remaining functions are useful when making a `fluids`-compatible library.
 
 ```ts
-import { hasFluidValue, getFluidValue, getFluidObservers, callFluidObserver } from 'fluids'
+import {
+  hasFluidValue,
+  getFluidValue,
+  getFluidObservers,
+  callFluidObserver,
+} from 'fluids'
 
 // Check if a value is observable.
 hasFluidValue(target)
