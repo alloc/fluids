@@ -133,6 +133,12 @@ abstract class FluidValue<T = any> {
   protected observerRemoved?(count: number, observer: FluidObserver<any>): void
 }
 
+/** Extract the value type from a `FluidValue` type */
+export type FluidUnwrap<T> = T extends FluidValue<infer U> ? U : T
+
+/** Extract the event type from a `FluidObservable` type */
+export type FluidEvents<T> = T extends FluidObservable<infer U> ? U : never
+
 /** An observer of `FluidValue` objects. */
 export type FluidObserver<E extends UnsafeFluidEvent = UnsafeFluidEvent> =
   | { eventObserved(event: E): void }
