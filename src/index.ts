@@ -52,7 +52,7 @@ function callFluidObserver(
 
 /** Send an event to all observers. */
 function callFluidObservers<E extends FluidEvent>(
-  target: FluidValue<any, E>,
+  target: FluidObservable<E>,
   event: E
 ): void
 
@@ -72,7 +72,7 @@ type GetFluidValue = {
 }
 
 type GetFluidObservers = {
-  <E extends FluidEvent>(target: FluidValue<any, E>): ReadonlySet<
+  <E extends FluidEvent>(target: FluidObservable<E>): ReadonlySet<
     FluidObserver<E>
   > | null
   (target: object): ReadonlySet<FluidObserver> | null
@@ -91,13 +91,21 @@ export interface UnsafeFluidEvent<T extends object = any>
 }
 
 /**
- * Extend this class for automatic TypeScript support when passing
- * an object to a `fluids` compatible function.
+ * A source of `FluidEvent` objects that can be observed with
+ * the `addFluidObserver` function.
  */
-abstract class FluidValue<T = any, E extends FluidEvent = UnsafeFluidEvent> {
-  protected [$get]: () => T
-  protected [$observers]?: Set<FluidObserver<E>>
+export interface FluidObservable<E extends FluidEvent = any> {
+  [$observers]: Set<FluidObserver<E>>
+}
 
+/**
+ * `FluidValue` objects can be unwrapped with `getFluidValue` to access
+ * their current value.
+ *
+ * Libraries may support observable values by handling `FluidValue` objects
+ * in their functions and classes.
+ */
+abstract class FluidValue<T = any> {
   constructor(get?: () => T) {
     if (!get && !(get = this.get)) {
       throw Error('Unknown getter')
@@ -135,8 +143,8 @@ const setFluidGetter = (target: object, get: () => any) =>
   setHidden(target, $get, get)
 
 /** Observe a `fluids`-compatible object. */
-function addFluidObserver<T, E extends FluidEvent>(
-  target: FluidValue<T, E>,
+function addFluidObserver<E extends FluidEvent>(
+  target: FluidObservable<E>,
   observer: FluidObserver<E>
 ): typeof observer
 
@@ -163,7 +171,7 @@ function addFluidObserver(target: any, observer: FluidObserver) {
 
 /** Stop observing a `fluids`-compatible object. */
 function removeFluidObserver<E extends FluidEvent>(
-  target: FluidValue<any, E>,
+  target: FluidObservable<E>,
   observer: FluidObserver<E>
 ): void
 
