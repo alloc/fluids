@@ -104,7 +104,8 @@ export interface UnsafeFluidEvent<T extends object = any>
  * - events passed to `callFluidObservers` are type-checked
  */
 export interface FluidObservable<E extends FluidEvent = any> {
-  [$observers]: Set<FluidObserver<E>>
+  // Never access this directly. Its only purpose is to enforce type safety.
+  [$observers]?: E | null
 }
 
 /**
