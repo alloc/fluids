@@ -68,7 +68,7 @@ function callFluidObservers(target: any, event: FluidEvent | UnsafeFluidEvent) {
 }
 
 type GetFluidValue = {
-  <T, U = never>(target: T | FluidValue<U>): Exclude<T, FluidValue> | U
+  <T>(target: T | FluidValue<T>): T
 }
 
 type GetFluidObservers = {
