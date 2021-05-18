@@ -78,21 +78,15 @@ type GetFluidObservers = {
   (target: object): ReadonlySet<FluidObserver> | null
 }
 
-/** An event from a `FluidValue` instance */
-export interface FluidEvent<T = any> {
+/** An event from a `fluids` compatible object */
+export interface FluidEvent<T extends object = any> {
   type: string
-  parent: FluidValue<T>
+  parent: T
 }
 
-/** An event from any `FluidValue` instance */
-export interface UnknownFluidEvent<T = any> extends FluidEvent<T> {
-  [key: string]: any
-}
-
-/** An untyped event from a `fluids` compatible object */
-export interface UnsafeFluidEvent {
-  type: string
-  parent: object
+/** An unknown event from a `fluids` compatible object */
+export interface UnsafeFluidEvent<T extends object = any>
+  extends FluidEvent<T> {
   [key: string]: any
 }
 
@@ -100,10 +94,7 @@ export interface UnsafeFluidEvent {
  * Extend this class for automatic TypeScript support when passing
  * an object to a `fluids` compatible function.
  */
-abstract class FluidValue<
-  T = any,
-  E extends FluidEvent<T> = UnknownFluidEvent<T>
-> {
+abstract class FluidValue<T = any, E extends FluidEvent = UnsafeFluidEvent> {
   protected [$get]: () => T
   protected [$observers]?: Set<FluidObserver<E>>
 
