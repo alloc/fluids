@@ -1,6 +1,6 @@
 {
   "name": "fluids",
-  "version": "0.3.0-rc.0",
+  "version": "0.3.0",
   "description": "Glue layer for reactivity",
   "main": "dist/cjs/fluids",
   "module": "dist/esm/fluids",
